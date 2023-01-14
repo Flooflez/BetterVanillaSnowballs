@@ -7,8 +7,10 @@ This vanilla compatible mod allows snowballs do damage through a custom gamerule
 This mod can be installed on the client to be used in Single Player and Open to LAN worlds, or on a Fabirc server.
 
 ## How to use this mod
-The damage of Snowballs can be set with the command: 
+The damage of snowballs can be set with the command: 
 `` /gamerule snowballDamage ``
+<br/>To toggle this increased damage only when fighting players use the command: 
+`` /gamerule snowballsOnlyDamagePlayers ``
 <br/>Only the host needs to have this mod installed, clients can join the fight without needing to install the mod.
 
 
