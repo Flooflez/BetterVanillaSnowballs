@@ -9,7 +9,7 @@ This mod can be installed on the client to be used in Single Player and Open to 
 ## How to use this mod
 The damage of Snowballs can be set with the command: 
 `` /gamerule snowballDamage ``
-Only the host needs to have this mod installed, clients can join the fight without needing to install the mod too.
+<br/>Only the host needs to have this mod installed, clients can join the fight without needing to install the mod.
 
 
 ## Installation Instructions (Single Player Worlds)
