@@ -1,6 +1,6 @@
-package net.better.vanilla.snowballs.mixin;
+package net.better.snowball.fights.mixin;
 
-import net.better.vanilla.snowballs.BetterVanillaSnowballs;
+import net.better.snowball.fights.BetterSnowballFights;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
@@ -20,9 +20,9 @@ public abstract class SnowballEntityMixin extends Entity {
     private float modifySnowballDamage(float damage){
         GameRules gameRules = this.world.getGameRules();
 
-        if (gameRules.getInt(BetterVanillaSnowballs.SNOWBALL_DAMAGE) <= 0) {
+        if (gameRules.getInt(BetterSnowballFights.SNOWBALL_DAMAGE) <= 0) {
             return damage;
         }
-        return gameRules.getInt(BetterVanillaSnowballs.SNOWBALL_DAMAGE);
+        return gameRules.getInt(BetterSnowballFights.SNOWBALL_DAMAGE);
     }
 }

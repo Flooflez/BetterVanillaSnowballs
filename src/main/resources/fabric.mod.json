@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "bettervanillasnowballs",
+  "id": "bettersnowballfights",
   "version": "${version}",
 
-  "name": "Better Vanilla Snowballs",
-  "description": "This mod makes vanilla snowballs do damage",
+  "name": "Better Snowball Fights",
+  "description": "This mod allows vanilla snowballs to do damage via a custom gamerule",
   "authors": [
     "Flooflez"
   ],
@@ -13,16 +13,16 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/bettervanillasnowballs/icon.png",
+  "icon": "assets/bettersnowballfights/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.better.vanilla.snowballs.BetterVanillaSnowballs"
+      "net.better.snowball.fights.BetterSnowballFights"
     ]
   },
   "mixins": [
-    "bettervanillasnowballs.mixins.json"
+    "bettersnowballfights.mixins.json"
   ],
 
   "depends": {
@@ -32,6 +32,6 @@
     "java": ">=17"
   },
   "suggests": {
-    "another-mod": "*"
+
   }
 }
