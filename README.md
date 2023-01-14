@@ -1,6 +1,6 @@
 # Better Snowball Fights
 
-This mod allows vanilla snowballs do damage through a custom gamerule, making it possible to have actual snowball fights in Minecraft.  
+This vanilla compatible mod allows snowballs do damage through a custom gamerule, making it possible to have actual snowball fights in Minecraft.  
 <p align="center">
   <img src="https://github.com/Flooflez/BetterVanillaSnowballs/blob/1.19/src/main/resources/assets/bettersnowballfights/snowball_fight.gif" />
 </p>
@@ -9,7 +9,7 @@ This mod can be installed on the client to be used in Single Player and Open to 
 ## How to use this mod
 The damage of Snowballs can be set with the command: 
 `` /gamerule snowballDamage ``
-
+Only the host needs to have this mod installed, clients can join the fight without needing to install the mod too.
 
 
 ## Installation Instructions (Single Player Worlds)
