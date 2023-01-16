@@ -2,7 +2,7 @@
 
 This vanilla compatible mod allows snowballs do damage through a custom gamerule, making it possible to have actual snowball fights in Minecraft.  
 <p align="center">
-  <img src="https://github.com/Flooflez/BetterVanillaSnowballs/blob/1.19/src/main/resources/assets/bettersnowballfights/snowball_fight.gif" />
+  <img src="https://github.com/Flooflez/BetterVanillaSnowballs/blob/1.19/assets/snowball_fight.gif?raw=true" />
 </p>
 This mod can be installed on the client to be used in Single Player and Open to LAN worlds, or on a Fabirc server.
 
