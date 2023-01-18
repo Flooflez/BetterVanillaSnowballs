@@ -1,6 +1,6 @@
 # Better Snowball Fights
 
-This vanilla compatible mod allows snowballs do damage through a custom gamerule, making it possible to have actual snowball fights in Minecraft.  
+This vanilla compatible mod allows snowballs to do damage through a custom gamerule, making it possible to have actual snowball fights in Minecraft.  
 <p align="center">
   <img src="https://github.com/Flooflez/BetterVanillaSnowballs/blob/1.19/assets/snowball_fight.gif?raw=true" />
 </p>
