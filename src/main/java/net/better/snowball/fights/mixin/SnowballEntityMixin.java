@@ -27,11 +27,11 @@ public abstract class SnowballEntityMixin extends ProjectileEntity{
 
         if(gameRules.getBoolean(BetterSnowballFights.SNOWBALLS_ONLY_DAMAGE_PLAYERS)){
             float i = entity instanceof PlayerEntity ? moddedDamage : amount;
-            return entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), i);
+            return entity.damage(this.getDamageSources().thrown(this, this.getOwner()), i);
         }
         else{
             float i = moddedDamage == 0 ? amount : moddedDamage;
-            return entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), i);
+            return entity.damage(this.getDamageSources().thrown(this, this.getOwner()), i);
         }
 
 
