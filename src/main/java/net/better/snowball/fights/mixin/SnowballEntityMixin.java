@@ -21,7 +21,7 @@ public abstract class SnowballEntityMixin extends ProjectileEntity{
 
     @Redirect(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean injected(Entity entity, DamageSource source, float amount){
-        GameRules gameRules = this.world.getGameRules();
+        GameRules gameRules = this.getWorld().getGameRules();
 
         int moddedDamage= gameRules.getInt(BetterSnowballFights.SNOWBALL_DAMAGE);
 
