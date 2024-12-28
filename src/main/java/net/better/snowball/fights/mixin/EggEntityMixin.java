@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -25,33 +26,35 @@ public abstract class EggEntityMixin extends ProjectileEntity{
         super(entityType, world);
     }
 
-    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true)
+    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;serverDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"), cancellable = true)
     private void injected(EntityHitResult entityHitResult, CallbackInfo ci) {
-        Entity entity = entityHitResult.getEntity();
-        GameRules gameRules = this.getWorld().getGameRules();
+        if(this.getWorld() instanceof ServerWorld) {
+            GameRules gameRules = this.getWorld().getServer().getGameRules();
+            Entity entity = entityHitResult.getEntity();
 
 
-        int moddedDamage= gameRules.getInt(BetterSnowballFights.EGG_DAMAGE);
-        boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.EGGS_ONLY_DAMAGE_PLAYERS);
+            int moddedDamage= gameRules.getInt(BetterSnowballFights.EGG_DAMAGE);
+            boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.EGGS_ONLY_DAMAGE_PLAYERS);
 
-        float i = (!playersOnly || entity instanceof PlayerEntity) ? moddedDamage : 0;
+            float i = (!playersOnly || entity instanceof PlayerEntity) ? moddedDamage : 0;
 
-        entity.damage(this.getDamageSources().thrown(this, this.getOwner()), i);
+            entity.serverDamage(this.getDamageSources().thrown(this, this.getOwner()), i);
 
-        double moddedKB= gameRules.getInt(BetterSnowballFights.EGG_KNOCKBACK)/10.0;
+            double moddedKB= gameRules.getInt(BetterSnowballFights.EGG_KNOCKBACK)/10.0;
 
-        if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
-            Vec3d velocity = this.getVelocity();
-            double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
+            if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
+                Vec3d velocity = this.getVelocity();
+                double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
 
-            entity.addVelocity(
-                    velocity.x * knockbackFactor,
-                    velocity.y * knockbackFactor,
-                    velocity.z * knockbackFactor
-            );
-            entity.velocityModified = true;
+                entity.addVelocity(
+                        velocity.x * knockbackFactor,
+                        velocity.y * knockbackFactor,
+                        velocity.z * knockbackFactor
+                );
+                entity.velocityModified = true;
+            }
+
+            ci.cancel();
         }
-
-        ci.cancel();
     }
 }

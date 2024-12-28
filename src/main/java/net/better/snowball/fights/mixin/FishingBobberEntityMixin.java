@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -25,31 +26,33 @@ public abstract class FishingBobberEntityMixin extends ProjectileEntity{
 
     @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileEntity;onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V", shift = At.Shift.AFTER), cancellable = true)
     private void injected(EntityHitResult entityHitResult, CallbackInfo ci) {
-        Entity entity = entityHitResult.getEntity();
+        if(this.getWorld() instanceof ServerWorld) {
+            GameRules gameRules = this.getWorld().getServer().getGameRules();
+            Entity entity = entityHitResult.getEntity();
 
-        GameRules gameRules = this.getWorld().getGameRules();
-        Entity owner = this.getOwner();
+            Entity owner = this.getOwner();
 
-        int moddedDamage= gameRules.getInt(BetterSnowballFights.BOBBER_DAMAGE);
-        boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.BOBBERS_ONLY_DAMAGE_PLAYERS);
+            int moddedDamage= gameRules.getInt(BetterSnowballFights.BOBBER_DAMAGE);
+            boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.BOBBERS_ONLY_DAMAGE_PLAYERS);
 
-        float i = (!playersOnly || entity instanceof PlayerEntity) ? moddedDamage : 0;
-        if(i != 0){
-            entity.damage(this.getDamageSources().thrown(this, owner), i);
-        }
+            float i = (!playersOnly || entity instanceof PlayerEntity) ? moddedDamage : 0;
+            if(i != 0){
+                entity.serverDamage(this.getDamageSources().thrown(this, owner), i);
+            }
 
-        double moddedKB= gameRules.getInt(BetterSnowballFights.BOBBER_KNOCKBACK)/10.0;
+            double moddedKB= gameRules.getInt(BetterSnowballFights.BOBBER_KNOCKBACK)/10.0;
 
-        if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
-            Vec3d velocity = this.getVelocity();
-            double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
+            if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
+                Vec3d velocity = this.getVelocity();
+                double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
 
-            entity.addVelocity(
-                    velocity.x * knockbackFactor,
-                    velocity.y * knockbackFactor,
-                    velocity.z * knockbackFactor
-            );
-            entity.velocityModified = true;
+                entity.addVelocity(
+                        velocity.x * knockbackFactor,
+                        velocity.y * knockbackFactor,
+                        velocity.z * knockbackFactor
+                );
+                entity.velocityModified = true;
+            }
         }
     }
 
@@ -63,15 +66,15 @@ public abstract class FishingBobberEntityMixin extends ProjectileEntity{
 
     @ModifyArg(method = "pullHookedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;multiply(D)Lnet/minecraft/util/math/Vec3d;"), index = 0)
     private double pullMultiplier(double value) {
-        GameRules gameRules = this.getWorld().getGameRules();
-        pulledEntity.velocityModified = true; //force update for players
+        if(this.getWorld() instanceof ServerWorld) {
+            GameRules gameRules = this.getWorld().getServer().getGameRules();
+            boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.BOBBERS_ONLY_DAMAGE_PLAYERS);
+            if(!playersOnly || pulledEntity instanceof PlayerEntity){
+                pulledEntity.velocityModified = true; //force update for players
+                return gameRules.getInt(BetterSnowballFights.FISHING_PULL_MULTIPLIER)/10.0;
+            }
+        }
+        return 0.1; //vanilla value
 
-        boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.BOBBERS_ONLY_DAMAGE_PLAYERS);
-        if(!playersOnly || pulledEntity instanceof PlayerEntity){
-            return gameRules.getInt(BetterSnowballFights.FISHING_PULL_MULTIPLIER)/10.0;
-        }
-        else{
-            return 0.1; //vanilla value
-        }
     }
 }
