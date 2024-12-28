@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,13 +44,16 @@ public abstract class SnowballEntityMixin extends ProjectileEntity{
 
         double moddedKB= gameRules.getInt(BetterSnowballFights.SNOWBALL_KNOCKBACK)/10.0;
 
-        if(moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)){
-            double x = entity.getX() - owner.getX();
-            double z = entity.getZ() - owner.getZ();
-            double y = entity.getY() - owner.getY();
-            double f = Math.max(x * x + z * z, 0.001);
-            double y2 = Math.max(y/(f + y*y) * moddedKB, 0.01);
-            entity.addVelocity(x / f * moddedKB, y2 , z / f * moddedKB);
+        if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
+            Vec3d velocity = this.getVelocity();
+            double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
+
+            entity.addVelocity(
+                    velocity.x * knockbackFactor,
+                    velocity.y * knockbackFactor,
+                    velocity.z * knockbackFactor
+            );
+            entity.velocityModified = true;
         }
 
         ci.cancel();
