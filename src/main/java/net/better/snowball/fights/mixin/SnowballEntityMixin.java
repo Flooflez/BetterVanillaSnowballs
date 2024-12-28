@@ -28,7 +28,6 @@ public abstract class SnowballEntityMixin extends ProjectileEntity{
     @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
     private void injected(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int amount) {
         GameRules gameRules = this.getWorld().getGameRules();
-        Entity owner = this.getOwner();
 
         int moddedDamage= gameRules.getInt(BetterSnowballFights.SNOWBALL_DAMAGE);
         boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.SNOWBALLS_ONLY_DAMAGE_PLAYERS);
@@ -40,7 +39,7 @@ public abstract class SnowballEntityMixin extends ProjectileEntity{
         else{
             i = moddedDamage == 0 ? amount : moddedDamage;
         }
-        entity.damage(this.getDamageSources().thrown(this, owner), i);
+        entity.damage(this.getDamageSources().thrown(this, this.getOwner()), i);
 
         double moddedKB= gameRules.getInt(BetterSnowballFights.SNOWBALL_KNOCKBACK)/10.0;
 

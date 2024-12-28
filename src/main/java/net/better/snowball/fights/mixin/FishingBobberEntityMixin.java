@@ -7,9 +7,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -38,19 +40,38 @@ public abstract class FishingBobberEntityMixin extends ProjectileEntity{
 
         double moddedKB= gameRules.getInt(BetterSnowballFights.BOBBER_KNOCKBACK)/10.0;
 
-        if(moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)){
-            double x = entity.getX() - owner.getX();
-            double z = entity.getZ() - owner.getZ();
-            double y = entity.getY() - owner.getY();
-            double f = Math.max(x * x + z * z, 0.001);
-            double y2 = Math.max(y/(f + y*y) * moddedKB, 0.01);
-            entity.addVelocity(x / f * moddedKB, y2 , z / f * moddedKB);
+        if (moddedKB != 0 && (!playersOnly || entity instanceof PlayerEntity)) {
+            Vec3d velocity = this.getVelocity();
+            double knockbackFactor = moddedKB / Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z + 0.001);
+
+            entity.addVelocity(
+                    velocity.x * knockbackFactor,
+                    velocity.y * knockbackFactor,
+                    velocity.z * knockbackFactor
+            );
+            entity.velocityModified = true;
         }
+    }
+
+
+    @Unique
+    private Entity pulledEntity;
+    @Inject(method = "pullHookedEntity", at = @At(value = "HEAD"))
+    private void capturePulledEntity(Entity entity, CallbackInfo ci) {
+        this.pulledEntity = entity; // Capture the entity being pulled
     }
 
     @ModifyArg(method = "pullHookedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;multiply(D)Lnet/minecraft/util/math/Vec3d;"), index = 0)
     private double pullMultiplier(double value) {
         GameRules gameRules = this.getWorld().getGameRules();
-        return gameRules.getInt(BetterSnowballFights.FISHING_PULL_MULTIPLIER)/10.0;
+        pulledEntity.velocityModified = true; //force update for players
+
+        boolean playersOnly = gameRules.getBoolean(BetterSnowballFights.BOBBERS_ONLY_DAMAGE_PLAYERS);
+        if(!playersOnly || pulledEntity instanceof PlayerEntity){
+            return gameRules.getInt(BetterSnowballFights.FISHING_PULL_MULTIPLIER)/10.0;
+        }
+        else{
+            return 0.1; //vanilla value
+        }
     }
 }
